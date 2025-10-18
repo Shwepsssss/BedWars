@@ -38,6 +38,10 @@ public interface PlayerKilledEvent {
 
     List<? extends ItemStackHolder> getDrops();
 
+    boolean isPlaySound();
+
+    void setPlaySound(boolean playSound);
+
     static void handle(Object plugin, Consumer<PlayerKilledEvent> consumer) {
         BedwarsAPI.getInstance().getEventUtils().handle(plugin, PlayerKilledEvent.class, consumer);
     }

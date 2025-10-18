@@ -34,4 +34,5 @@ public class PlayerKilledEventImpl implements PlayerKilledEvent, Event {
     private final BedWarsPlayer killer;
     private final BedWarsPlayer player;
     private final List<ItemStack> drops;
+    private boolean playSound;
 }

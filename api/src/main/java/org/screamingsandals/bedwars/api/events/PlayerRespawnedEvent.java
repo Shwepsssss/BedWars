@@ -21,6 +21,7 @@ package org.screamingsandals.bedwars.api.events;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.screamingsandals.bedwars.api.BedwarsAPI;
+import org.screamingsandals.bedwars.api.Team;
 import org.screamingsandals.bedwars.api.game.LocalGame;
 import org.screamingsandals.bedwars.api.player.BWPlayer;
 
@@ -31,6 +32,8 @@ public interface PlayerRespawnedEvent {
     LocalGame getGame();
 
     BWPlayer getPlayer();
+
+    Team getTeam();
 
     static void handle(Object plugin, Consumer<PlayerRespawnedEvent> consumer) {
         BedwarsAPI.getInstance().getEventUtils().handle(plugin, PlayerRespawnedEvent.class, consumer);

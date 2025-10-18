@@ -201,8 +201,12 @@ public class PlayerListener {
                 boolean onlyOnBedDestroy = game.getConfigurationContainer().getOrDefault(GameConfigurationContainer.STATISTICS_BED_DESTROYED_KILLS, false);
 
                 var killer = event.killer();
-                if (killer != null && PlayerManagerImpl.getInstance().isPlayerInGame(killer)) {
-                    var gKiller = killer.as(BedWarsPlayer.class);
+                var gKiller = killer != null && PlayerManagerImpl.getInstance().isPlayerInGame(killer) ? killer.as(BedWarsPlayer.class) : null;
+
+                var killedEvent = new PlayerKilledEventImpl(game, gKiller, gVictim, drops);
+                EventManager.fire(killedEvent);
+
+                if (gKiller != null) {
                     if (gKiller.getGame() == game) {
                         if (!onlyOnBedDestroy || !isBed) {
                             game.dispatchRewardCommands(
@@ -227,19 +231,23 @@ public class PlayerListener {
                         if (team.isDead()) {
                             SpawnEffects.spawnEffect(game, gVictim, "game-effects.teamkill");
 
-                            killer.playSound(SoundStart.sound(
-                                    ResourceLocation.of(MainConfig.getInstance().node("sounds", "team_kill", "sound").getString("entity.player.levelup")),
-                                    SoundSource.AMBIENT,
-                                    (float) MainConfig.getInstance().node("sounds", "team_kill", "volume").getDouble(),
-                                    (float) MainConfig.getInstance().node("sounds", "team_kill", "pitch").getDouble()
-                            ));
+                            if (killedEvent.isPlaySound()) {
+                                killer.playSound(SoundStart.sound(
+                                        ResourceLocation.of(MainConfig.getInstance().node("sounds", "team_kill", "sound").getString("entity.player.levelup")),
+                                        SoundSource.AMBIENT,
+                                        (float) MainConfig.getInstance().node("sounds", "team_kill", "volume").getDouble(),
+                                        (float) MainConfig.getInstance().node("sounds", "team_kill", "pitch").getDouble()
+                                ));
+                            }
                         } else {
-                            killer.playSound(SoundStart.sound(
-                                    ResourceLocation.of(MainConfig.getInstance().node("sounds", "player_kill", "sound").getString("entity.generic.big_fall")),
-                                    SoundSource.AMBIENT,
-                                    (float) MainConfig.getInstance().node("sounds", "player_kill", "volume").getDouble(),
-                                    (float) MainConfig.getInstance().node("sounds", "player_kill", "pitch").getDouble()
-                            ));
+                            if (killedEvent.isPlaySound()) {
+                                killer.playSound(SoundStart.sound(
+                                        ResourceLocation.of(MainConfig.getInstance().node("sounds", "player_kill", "sound").getString("entity.generic.big_fall")),
+                                        SoundSource.AMBIENT,
+                                        (float) MainConfig.getInstance().node("sounds", "player_kill", "volume").getDouble(),
+                                        (float) MainConfig.getInstance().node("sounds", "player_kill", "pitch").getDouble()
+                                ));
+                            }
                             if (!isBed) {
                                 EconomyUtils.deposit(killer, game.getConfigurationContainer().getOrDefault(GameConfigurationContainer.ECONOMY_REWARD_FINAL_KILL, 0.0));
                             } else {
@@ -248,9 +256,6 @@ public class PlayerListener {
                         }
                     }
                 }
-
-                var killedEvent = new PlayerKilledEventImpl(game, killer != null && PlayerManagerImpl.getInstance().isPlayerInGame(killer) ? killer.as(BedWarsPlayer.class) : null, gVictim, drops);
-                EventManager.fire(killedEvent);
 
                 if (PlayerStatisticManager.isEnabled()) {
                     var diePlayer = PlayerStatisticManager.getInstance().getStatistic(victim);
@@ -511,7 +516,7 @@ public class PlayerListener {
                 Debug.info(event.player().getName() + " is going to play the game");
                 event.location(gPlayer.getGame().getPlayerTeam(gPlayer).getRandomSpawn());
 
-                var respawnEvent = new PlayerRespawnedEventImpl(game, gPlayer);
+                var respawnEvent = new PlayerRespawnedEventImpl(game, gPlayer, team);
                 EventManager.fire(respawnEvent);
 
                 if (game.getConfigurationContainer().getOrDefault(GameConfigurationContainer.RESPAWN_PROTECTION_ENABLED, true)) {

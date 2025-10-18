@@ -1204,7 +1204,7 @@ public class GameImpl implements LocalGame {
                     healthIndicator.addTrackedPlayer(gamePlayer);
                 }
 
-                EventManager.fire(new PlayerRespawnedEventImpl(this, gamePlayer));
+                EventManager.fire(new PlayerRespawnedEventImpl(this, gamePlayer, currentTeam));
             });
         }
     }
@@ -1298,7 +1298,11 @@ public class GameImpl implements LocalGame {
 
         if (!chunksWithTickets.isEmpty()) {
             for (var chunk : chunksWithTickets) {
-                chunk.removePluginChunkTicket();
+                try {
+                    chunk.removePluginChunkTicket();
+                } catch (Exception ex) {
+                    BedWarsPlugin.getInstance().getLogger().warn("Unable to remove plugin chunk ticket", ex);
+                }
             }
             chunksWithTickets.clear();
         }
@@ -1932,13 +1936,18 @@ public class GameImpl implements LocalGame {
         int minZ = Math.min(pos1.getBlockZ(), pos2.getBlockZ()) >> 4;
         int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ()) >> 4;
 
-        for (int x = minX; x <= maxX; x++) {
-            for (int z = minZ; z <= maxZ; z++) {
-                var chunk = world.getChunkAt(x, z);
-                if (chunk != null && chunk.addPluginChunkTicket()) {
-                    chunksWithTickets.add(chunk);
+
+        try {
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    var chunk = world.getChunkAt(x, z);
+                    if (chunk != null && chunk.addPluginChunkTicket()) {
+                        chunksWithTickets.add(chunk);
+                    }
                 }
             }
+        } catch (Exception ex) {
+            BedWarsPlugin.getInstance().getLogger().warn("Failed to claim chunk tickets, skipping", ex);
         }
     }
 

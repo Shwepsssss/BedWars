@@ -126,8 +126,7 @@ public class DumpCommand extends BaseCommand {
                                                                             "monsters", world.isSpawningOfMonstersAllowed()
                                                                     ),
                                                                     "maxHeight", world.getMaxY(),
-                                                                    "minHeight", world.getMinY(),
-                                                                    "keepSpawnInMemory", world.isSpawnKeptInMemory()
+                                                                    "minHeight", world.getMinY()
                                                             )).collect(Collectors.toList()),
                                                             "plugins", Plugins.getAllPlugins().stream().map(plugin -> Map.of(
                                                                     "enabled", plugin.isEnabled(),
