@@ -46,6 +46,7 @@ subprojects {
             relocate("io.leangen.geantyref", "org.screamingsandals.bedwars.lib.ext.geantyref")
             relocate("cloud.commandframework", "org.screamingsandals.bedwars.lib.ext.cloud")
             relocate("me.lucko.commodore", "org.screamingsandals.bedwars.lib.ext.commodore")
+            relocate("gs.mclo", "org.screamingsandals.bedwars.lib.ext.mclogs")
         }
     }
 
