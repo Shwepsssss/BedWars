@@ -547,6 +547,7 @@ public class LangKeys {
     public final String[] PARTY_COMMAND_IS_EMPTY = {"party", "command", "is_empty"};
     public final String[] PARTY_COMMAND_WARPED = {"party", "command", "warped"};
     public final String[] DUMP_SUCCESS = {"dump", "success"};
+    public final String[] DUMP_SUCCESS_LOGS = {"dump", "success_logs"};
     public final String[] DUMP_FAILED = {"dump", "failed"};
     public final String[] DUMP_UNKNOWN_SERVICE = {"dump", "unknown_service"};
     public final String[] LANGUAGE_USAGE_BW_LANG = {"language", "usage_bw_lang"};

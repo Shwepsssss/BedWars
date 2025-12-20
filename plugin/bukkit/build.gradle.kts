@@ -25,6 +25,7 @@ runTestServer {
     versions(
         org.screamingsandals.gradle.run.config.Platform.PAPER,
         listOf(
+            "1.21.11",
             "1.21.10",
             "1.21.8",
             "1.21.4",

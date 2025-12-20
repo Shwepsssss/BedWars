@@ -155,10 +155,10 @@ public class LocalGameLoaderImpl implements LocalGameLoader {
             }
 
             if (Server.isVersion(1, 15)) {
-                game.getWorld().setGameRuleValue(GameRuleType.of("doImmediateRespawn"), true);
+                game.getWorld().setGameRuleValue(GameRuleType.of("immediate_respawn"), true);
             }
             if (Server.isVersion(1, 21, 6) && MainConfig.getInstance().node("disable-locator-bars-in-arena-worlds").getBoolean(true)) {
-                game.getWorld().setGameRuleValue(GameRuleType.of("locatorBar"), false);
+                game.getWorld().setGameRuleValue(GameRuleType.of("locator_bar"), false);
             }
 
             game.setPos1(MiscUtils.readLocationFromString(game.getWorld(), Objects.requireNonNull(configMap.node("pos1").getString())));

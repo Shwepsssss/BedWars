@@ -10,6 +10,9 @@ dependencies {
     /* SHADED */
     implementation("org.screamingsandals.language.bedwars:BedWarsLanguage:${Regex("^\\d+\\.\\d+").find(project.version.toString())?.value}-SNAPSHOT")
     implementation(libs.hikari)
+    implementation(libs.mclogs.api) {
+        exclude(group="*", module="*")
+    }
 
     api(libs.configurate.gson) {
         exclude(group="*", module="*")

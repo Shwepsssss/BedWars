@@ -43,4 +43,6 @@ public class StoredInventory {
     private GameMode mode;
     private float xp;
     private Object platformScoreboard;
+    private double health = 20.0D;
+    private double maxHealth = 20.0D;
 }

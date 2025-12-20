@@ -39,6 +39,7 @@ import org.screamingsandals.lib.world.Location;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class BedWarsPlayer extends ExtendablePlayer implements BWPlayer {
@@ -124,6 +125,11 @@ public class BedWarsPlayer extends ExtendablePlayer implements BWPlayer {
         oldInventory.setListName(getPlayerListName());
         oldInventory.setDisplayName(getDisplayName());
         oldInventory.setFoodLevel(getFoodLevel());
+        oldInventory.setHealth(getHealth());
+        var attribute = getAttribute(AttributeType.of("minecraft:generic.max_health"));
+        if (attribute != null) {
+            oldInventory.setMaxHealth(attribute.getBaseValue());
+        }
 
         if (MainConfig.getInstance().node("remember-what-scoreboards-players-had-before").getBoolean()) {
             oldInventory.setPlatformScoreboard(PlatformService.getInstance().savePlatformScoreboard(this));
@@ -147,6 +153,11 @@ public class BedWarsPlayer extends ExtendablePlayer implements BWPlayer {
         setLevel(oldInventory.getLevel());
         setExp(oldInventory.getXp());
         setFoodLevel(oldInventory.getFoodLevel());
+        setHealth(oldInventory.getHealth());
+        var attribute = getAttribute(AttributeType.of("minecraft:generic.max_health"));
+        if (attribute != null) {
+            attribute.setBaseValue(oldInventory.getMaxHealth());
+        }
 
         for (var e : getActivePotionEffects()) {
             removePotionEffect(e);
