@@ -8,7 +8,7 @@ dependencies {
     compileOnly(libs.parties.api)
 
     /* SHADED */
-    implementation("org.screamingsandals.language.bedwars:BedWarsLanguage:${Regex("^\\d+\\.\\d+").find(project.version.toString())?.value}-SNAPSHOT")
+    api("org.screamingsandals.language.bedwars:BedWarsLanguage:${Regex("^\\d+\\.\\d+").find(project.version.toString())?.value}-SNAPSHOT")
     implementation(libs.hikari)
     implementation(libs.mclogs.api) {
         exclude(group="*", module="*")

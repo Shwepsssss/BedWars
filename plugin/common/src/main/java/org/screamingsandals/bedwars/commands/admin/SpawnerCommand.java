@@ -29,6 +29,7 @@ import org.screamingsandals.bedwars.game.GameImpl;
 import org.screamingsandals.bedwars.game.ItemSpawnerImpl;
 import org.screamingsandals.bedwars.game.TeamImpl;
 import org.screamingsandals.bedwars.lang.LangKeys;
+import org.screamingsandals.bedwars.lang.LangUtils;
 import org.screamingsandals.bedwars.utils.ArenaUtils;
 import org.screamingsandals.lib.hologram.Hologram;
 import org.screamingsandals.lib.lang.Message;
@@ -339,7 +340,7 @@ public class SpawnerCommand extends BaseAdminSubCommand {
                             sender.sendMessage(Message.of(LangKeys.ADMIN_ARENA_EDIT_SUCCESS_SPAWNER_INITIAL_INTERVAL_SET)
                                     .placeholder("type", itemSpawner.getItemSpawnerType().toSpawnerType(game).getItemName())
                                     .placeholder("interval", value)
-                                    .placeholder("unit", Message.of(LangKeys.toUnitLangKey(unit, value != 1)))
+                                    .placeholder("unit", Message.of(LangUtils.toUnitLangKey(unit, value != 1)))
                                     .defaultPrefix()
                             );
                         }))

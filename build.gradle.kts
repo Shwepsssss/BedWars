@@ -31,7 +31,7 @@ subprojects {
 
     configureJavac(JavaVersion.VERSION_11)
 
-    val buildNumber = System.getenv("BUILD_NUMBER") ?: "dev"
+    val buildNumber = providers.environmentVariable("BUILD_NUMBER").orElse("dev")
 
     tasks.withType<Jar> {
         archiveClassifier.set(buildNumber)
