@@ -41,7 +41,7 @@ If you have found any bug, feel free to report it into [Issues](https://github.c
 
 ## Compiling
 
-This project uses **Gradle** and requires **JDK 11** or newer. To build it, clone the repository and run:
+This project uses **Gradle** and requires **JDK 17** or newer (the compiled JARs require JDK 11 or newer to run). To build it, clone the repository and run:
 
 ```bash
 ./gradlew clean build
