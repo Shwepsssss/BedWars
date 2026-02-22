@@ -131,6 +131,7 @@ public class GameImpl implements LocalGame {
     private final Map<BedWarsPlayer, RespawnProtection> respawnProtectionMap = new HashMap<>();
     private double fee;
     private int pauseCountdown;
+    private Map<Integer, Integer> dynamicPauseCountdown;
     private int gameTime;
     private int minPlayers;
     private final List<BedWarsPlayer> players = new ArrayList<>();
@@ -702,7 +703,7 @@ public class GameImpl implements LocalGame {
                         Objects.requireNonNull(Worlds.getWorld(MainConfig.getInstance().node("mainlobby", "world").getString())),
                         Objects.requireNonNull(MainConfig.getInstance().node("mainlobby", "location").getString())
                 );
-                gamePlayer.teleport(mainLobbyLocation);
+                Tasker.runDelayed(gamePlayer, () -> gamePlayer.teleport(mainLobbyLocation), 1L, TaskerTime.TICKS);
                 gamePlayer.mainLobbyUsed = true;
             } catch (Throwable t) {
                 BedWarsPlugin.getInstance().getLogger().error("You didn't setup the mainlobby properly! Do it via commands, not directly in config.yml!");
@@ -2026,23 +2027,28 @@ public class GameImpl implements LocalGame {
 
     protected void handleBungeePostGame() {
         GameManagerImpl.getInstance().reselectGame();
-        preServerRestart = false;
+        if (
+                MainConfig.getInstance().node("bungee", "serverRestart").getBoolean()
+                || MainConfig.getInstance().node("bungee", "serverStop").getBoolean()
+        ) {
+            preServerRestart = true;
+
+            Tasker.runDelayed(DefaultThreads.GLOBAL_THREAD, () -> {
+                if (MainConfig.getInstance().node("bungee", "serverRestart").getBoolean()) {
+                    EventManager.fire(new ServerRestartEventImpl());
+
+                    Server.getConsoleSender().tryToDispatchCommand("restart");
+                } else if (MainConfig.getInstance().node("bungee", "serverStop").getBoolean()) {
+                    Server.shutdown();
+                } else {
+                    preServerRestart = false;
+                }
+            }, 30, TaskerTime.TICKS);
+        }
 
         if (!players.isEmpty()) {
             kickAllPlayers();
         }
-
-        Tasker.runDelayed(DefaultThreads.GLOBAL_THREAD, () -> {
-            if (MainConfig.getInstance().node("bungee", "serverRestart").getBoolean()) {
-                EventManager.fire(new ServerRestartEventImpl());
-
-                Server.getConsoleSender().tryToDispatchCommand("restart");
-            } else if (MainConfig.getInstance().node("bungee", "serverStop").getBoolean()) {
-                Server.shutdown();
-            } else {
-                preServerRestart = false;
-            }
-        }, 30, TaskerTime.TICKS);
     }
 
     public void spawnGameStores() {

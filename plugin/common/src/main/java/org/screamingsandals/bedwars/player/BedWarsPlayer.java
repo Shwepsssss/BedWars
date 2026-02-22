@@ -24,10 +24,12 @@ import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.screamingsandals.bedwars.BedWarsPlugin;
 import org.screamingsandals.bedwars.PlatformService;
+import org.screamingsandals.bedwars.api.game.Game;
 import org.screamingsandals.bedwars.api.player.BWPlayer;
 import org.screamingsandals.bedwars.commands.BedWarsPermission;
 import org.screamingsandals.bedwars.config.MainConfig;
 import org.screamingsandals.bedwars.game.GameImpl;
+import org.screamingsandals.bedwars.game.GameManagerImpl;
 import org.screamingsandals.bedwars.lib.debug.Debug;
 import org.screamingsandals.bedwars.utils.BungeeUtils;
 import org.screamingsandals.lib.attribute.AttributeType;
@@ -35,6 +37,9 @@ import org.screamingsandals.lib.item.ItemStack;
 import org.screamingsandals.lib.player.ExtendablePlayer;
 import org.screamingsandals.lib.player.Player;
 import org.screamingsandals.lib.player.gamemode.GameMode;
+import org.screamingsandals.lib.tasker.DefaultThreads;
+import org.screamingsandals.lib.tasker.Tasker;
+import org.screamingsandals.lib.tasker.TaskerTime;
 import org.screamingsandals.lib.world.Location;
 
 import java.util.ArrayList;
@@ -69,15 +74,78 @@ public class BedWarsPlayer extends ExtendablePlayer implements BWPlayer {
         super(player);
     }
 
+
     public void changeGame(GameImpl game) {
+        changeGame(game, false);
+    }
+
+    public void changeGame(GameImpl game, boolean gameEndLeave) {
         if (this.game != null && game == null) {
+            Game oldGame = this.game;
             this.game.internalLeavePlayer(this);
             this.game = null;
             this.setSpectator(false);
             this.clean();
             this.restoreInv();
             if (GameImpl.isBungeeEnabled()) {
-                BungeeUtils.movePlayerToBungeeServer(this, BedWarsPlugin.isDisabling(), hubServerName);
+                if (
+                        gameEndLeave
+                        && !BedWarsPlugin.isDisabling()
+                        && MainConfig.getInstance().node("bungee", "rejoin-players-after-game").getBoolean()
+                        && !MainConfig.getInstance().node("bungee", "serverRestart").getBoolean()
+                        && !MainConfig.getInstance().node("bungee", "serverStop").getBoolean()
+                ) {
+                    Tasker.runDelayed(DefaultThreads.GLOBAL_THREAD, () -> {
+                        if (!MainConfig.getInstance().node("bungee", "legacy-mode").getBoolean(true)) {
+                            // not in legacy mode, just try again the same game
+                            try {
+                                Debug.info(getName() + " is connecting to " + oldGame.getName());
+                                oldGame.joinToGame(this);
+                            } catch (NullPointerException ignored) {
+                                if (!hasPermission(BedWarsPermission.ADMIN_PERMISSION.asPermission())) {
+                                    Debug.info(getName() + " is not connecting to any game! Kicking...");
+                                    BungeeUtils.movePlayerToBungeeServer(this, false, hubServerName);
+                                }
+                            }
+                        } else {
+                            // basically auto-game-connect logic
+                            try {
+                                Debug.info("Selecting game for " + getName());
+                                var gameManager = GameManagerImpl.getInstance();
+                                Game game1 = null;
+                                if (MainConfig.getInstance().node("bungee", "random-game-selection", "enabled").getBoolean()) {
+                                    if (gameManager.isDoGamePreselection()) {
+                                        game1 = gameManager.getPreselectedGame();
+                                    }
+                                }
+                                if (game1 == null) {
+                                    game1 = (
+                                            MainConfig.getInstance().node("bungee", "random-game-selection", "enabled").getBoolean()
+                                                    ? gameManager.getGameWithHighestPlayers()
+                                                    : gameManager.getFirstWaitingGame()
+                                    ).or(gameManager::getFirstRunningGame).orElse(null);
+                                }
+                                if (game1 == null) { // still nothing?
+                                    if (!hasPermission(BedWarsPermission.ADMIN_PERMISSION.asPermission())) {
+                                        Debug.info(getName() + " is not connecting to any game! Kicking...");
+                                        BungeeUtils.movePlayerToBungeeServer(this, false, hubServerName);
+                                    }
+                                    return;
+                                }
+                                Debug.info(getName() + " is connecting to " + game1.getName());
+
+                                game1.joinToGame(this);
+                            } catch (NullPointerException ignored) {
+                                if (!hasPermission(BedWarsPermission.ADMIN_PERMISSION.asPermission())) {
+                                    Debug.info(getName() + " is not connecting to any game! Kicking...");
+                                    BungeeUtils.movePlayerToBungeeServer(this, false, hubServerName);
+                                }
+                            }
+                        }
+                    }, 1L, TaskerTime.TICKS);
+                } else {
+                    BungeeUtils.movePlayerToBungeeServer(this, BedWarsPlugin.isDisabling(), hubServerName);
+                }
             }
         } else if (this.game == null && game != null) {
             this.storeInv();

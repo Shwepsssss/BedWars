@@ -55,6 +55,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
@@ -361,6 +362,19 @@ public class LocalGameLoaderImpl implements LocalGameLoader {
 
             game.setDisplayName(configMap.node("game-display-name").getString());
 
+            {
+                var dynamicPauseCountdown = configMap.node("dynamicPauseCountdown");
+                if (!dynamicPauseCountdown.empty()) {
+                    var map = new HashMap<Integer, Integer>();
+                    for (var entry : dynamicPauseCountdown.childrenMap().entrySet()) {
+                        map.put(Integer.parseInt(entry.getKey().toString()), entry.getValue().getInt(game.getPauseCountdown()));
+                    }
+                    if (!map.isEmpty()) {
+                        game.setDynamicPauseCountdown(map);
+                    }
+                }
+            }
+
             game.start();
             Server.getConsoleSender().sendMessage(
                     MiscUtils.BW_PREFIX.withAppendix(
@@ -470,6 +484,13 @@ public class LocalGameLoaderImpl implements LocalGameLoader {
         }
 
         configMap.node("fee").set(game.getFee());
+
+        var dynamicPauseCountdown = game.getDynamicPauseCountdown();
+        if (dynamicPauseCountdown != null) {
+            for (var entry : dynamicPauseCountdown.entrySet()) {
+                configMap.node("dynamicPauseCountdown", entry.getKey().toString()).set(entry.getValue());
+            }
+        }
 
         try {
             loader.save(configMap);

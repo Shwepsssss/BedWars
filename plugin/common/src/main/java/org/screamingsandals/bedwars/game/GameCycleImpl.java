@@ -64,6 +64,7 @@ import org.screamingsandals.lib.world.gamerule.GameRuleType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -143,7 +144,7 @@ public class GameCycleImpl implements GameCycle {
 
         for (BedWarsPlayer player : List.copyOf(game.getPlayers())) {
             player.sendMessage(message);
-            player.changeGame(null);
+            player.changeGame(null, true);
 
             if (MainConfig.getInstance().node("rewards", "enabled").getBoolean()) {
                 game.dispatchEndGameReward(player);
@@ -548,6 +549,18 @@ public class GameCycleImpl implements GameCycle {
                         nextStatus = GameStatus.RUNNING;
                     } else {
                         nextCountdown--;
+
+                        if (game.getDynamicPauseCountdown() != null) {
+                            var players = game.countPlayers();
+                            var result = game.getDynamicPauseCountdown().entrySet().stream()
+                                    .filter(e -> e.getKey() <= players)
+                                    .max(Map.Entry.comparingByKey())
+                                    .map(Map.Entry::getValue)
+                                    .orElse(null);
+                            if (result != null && result < nextCountdown) {
+                                nextCountdown = result;
+                            }
+                        }
 
                         var countdown = game.getCountdown();
                         // It's counting down, so let's show the player the countdown when it hits 10 seconds or below.
