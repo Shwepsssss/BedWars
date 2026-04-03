@@ -399,9 +399,6 @@ public class BedWarsPlugin implements BedwarsAPI {
                 )
         );
 
-        Server.getConsoleSender().sendMessage(Component.text("Everything has finished loading! If you like our work, consider subscribing to our Patreon! <3", Color.WHITE));
-        Server.getConsoleSender().sendMessage(Component.text("https://www.patreon.com/screamingsandals", Color.WHITE));
-
         HologramManager.setPreferDisplayEntities(MainConfig.getInstance().node("prefer-1-19-4-display-entities").getBoolean());
         if (!Server.isVersion(1, 9)) {
             // 1.8.8 boss bars

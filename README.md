@@ -9,7 +9,7 @@
 
 A highly flexible BedWars plugin with wide Minecraft version support, originally inspired by BedwarsRel.
 
-Supported versions: \[1.8.8 - 1.21.11\]. Recommended version: \[1.21.10\]
+Supported versions: \[1.8.8 - 26.1.1\]. Recommended version: \[1.21.11\]
 
 ## Support
 If you need any help, you can contact us on [Discord](https://discord.gg/4xB54Ts). Please make sure to look into older messages. There are many question already answered. It is really anoying to repeat the same thing over and over.
@@ -41,7 +41,7 @@ If you have found any bug, feel free to report it into [Issues](https://github.c
 
 ## Compiling
 
-This project uses **Gradle** and requires **JDK 17** or newer (the compiled JARs require JDK 11 or newer to run). To build it, clone the repository and run:
+This project uses **Gradle** and requires **JDK 17** or newer. To build it, clone the repository and run:
 
 ```bash
 ./gradlew clean build

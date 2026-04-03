@@ -29,7 +29,7 @@ subprojects {
         "compileOnly"(rootProject.libs.jetbrains.annotations)
     }
 
-    configureJavac(JavaVersion.VERSION_11)
+    configureJavac(JavaVersion.VERSION_17)
 
     val buildNumber = providers.environmentVariable("BUILD_NUMBER").orElse("dev")
 
