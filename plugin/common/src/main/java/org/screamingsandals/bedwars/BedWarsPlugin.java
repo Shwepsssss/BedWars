@@ -94,7 +94,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Plugin(
-        id = "ScreamingBedWars",
+        id = "BedWars",
         authors = {"ScreamingSandals <Misat11, iamceph, Pronze, ZlataOvce>"},
         version = VersionInfo.VERSION,
         loadTime = Plugin.LoadTime.POSTWORLD
@@ -110,7 +110,8 @@ import java.util.stream.Collectors;
         "PerWorldInventory",
         "SlimeWorldManager",
         "My_Worlds",
-        "Parties"
+        "Parties",
+        "ASPaperPlugin"
 })
 @Init(
         services = {
@@ -286,7 +287,7 @@ public class BedWarsPlugin implements BedwarsAPI {
                             }
                         });
                         Files.move(sbw0_2_x, sbw0_2_x.getParent().resolve("BedWars.old"));
-                        logger.info("Thank you for updating the plugin! We are now in new folder: plugins/ScreamingBedWars :)");
+                        logger.info("Thank you for updating the plugin! We are now in new folder: plugins/BedWars :)");
                     } catch (Throwable e) {
                         logger.error("We couldn't copy your old SBW 0.2.x setup. Sorry :(", e);
                     }

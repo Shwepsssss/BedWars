@@ -50,7 +50,7 @@ public class DumpLogsCommand extends BaseCommand {
 
                             Tasker.runAsync(() -> {
                                 try {
-                                    var response = new MclogsClient("ScreamingBedWars", VersionInfo.VERSION, Server.getVersion())
+                                    var response = new MclogsClient("BedWars", VersionInfo.VERSION, Server.getVersion())
                                             .uploadLog(Path.of("./logs/latest.log"))
                                             .get();
 
